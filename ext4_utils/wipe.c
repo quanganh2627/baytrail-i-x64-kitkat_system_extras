@@ -30,31 +30,56 @@
 #define BLKSECDISCARD _IO(0x12,125)
 #endif
 
-int wipe_block_device(int fd, s64 len)
+int wipe_block_device(int fd, s64 len, int wipe_mode)
 {
 	u64 range[2];
 	int ret;
 
+
+	if (wipe_mode == WIPE_DISABLED) {
+		warn("Wipe is disabled\n");
+		return 0;
+	}
+
 	range[0] = 0;
 	range[1] = len;
-	ret = ioctl(fd, BLKSECDISCARD, &range);
-	if (ret < 0) {
-		range[0] = 0;
-		range[1] = len;
+
+	if (wipe_mode == WIPE_FALLBACK) {
+		ret = ioctl(fd, BLKSECDISCARD, &range);
+		if (ret < 0) {
+			range[0] = 0;
+			range[1] = len;
+			ret = ioctl(fd, BLKDISCARD, &range);
+			if (ret < 0) {
+				warn("Discard failed on fallback mode\n");
+				return 1;
+			} else {
+				warn("Wipe via secure discard failed, used discard instead\n");
+				return 0;
+			}
+		}
+	}
+
+	if (wipe_mode == WIPE_SECURE) {
+		ret = ioctl(fd, BLKSECDISCARD, &range);
+		if (ret < 0) {
+			warn("Secure Discard failed\n");
+			return 1;
+		}
+	}
+
+	if (wipe_mode == WIPE_UNSECURE) {
 		ret = ioctl(fd, BLKDISCARD, &range);
 		if (ret < 0) {
-			warn("Discard failed\n");
+			warn("Unsecure Discard failed\n");
 			return 1;
-		} else {
-			warn("Wipe via secure discard failed, used discard instead\n");
-			return 0;
 		}
 	}
 
 	return 0;
 }
 #else
-int wipe_block_device(int fd, s64 len)
+int wipe_block_device(int fd, s64 len, int wipe_mode)
 {
 	error("wipe not supported on non-linux platforms");
 	return 1;

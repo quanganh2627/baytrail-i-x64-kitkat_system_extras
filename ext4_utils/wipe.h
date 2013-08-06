@@ -19,6 +19,11 @@
 
 #include "ext4_utils.h"
 
-int wipe_block_device(int fd, s64 len);
+#define WIPE_DISABLED   0
+#define WIPE_FALLBACK   1
+#define WIPE_UNSECURE   2
+#define WIPE_SECURE     4
+
+int wipe_block_device(int fd, s64 len, int wipe_mode);
 
 #endif

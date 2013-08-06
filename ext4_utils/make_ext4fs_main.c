@@ -53,7 +53,7 @@ static void usage(char *path)
 	fprintf(stderr, "    [ -g <blocks per group> ] [ -i <inodes> ] [ -I <inode size> ]\n");
 	fprintf(stderr, "    [ -L <label> ] [ -f ] [ -a <android mountpoint> ]\n");
 	fprintf(stderr, "    [ -S file_contexts ]\n");
-	fprintf(stderr, "    [ -z | -s ] [ -w ] [ -c ] [ -J ] [ -v ]\n");
+	fprintf(stderr, "    [ -z | -s ] [ -w <wipe_mode>] [ -c ] [ -J ] [ -v ]\n");
 	fprintf(stderr, "    <filename> [<directory>]\n");
 }
 
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	int gzip = 0;
 	int sparse = 0;
 	int crc = 0;
-	int wipe = 0;
+	int wipe_mode = WIPE_DISABLED;
 	int fd;
 	int exitcode;
 	int verbose = 0;
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 	struct selinux_opt seopts[] = { { SELABEL_OPT_PATH, "" } };
 #endif
 
-	while ((opt = getopt(argc, argv, "l:j:b:g:i:I:L:a:S:fwzJsctv")) != -1) {
+	while ((opt = getopt(argc, argv, "l:j:b:g:i:I:L:a:S:fw:zJsctv")) != -1) {
 		switch (opt) {
 		case 'l':
 			info.len = parse_num(optarg);
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 #endif
 			break;
 		case 'w':
-			wipe = 1;
+			wipe_mode = parse_num(optarg);
 			break;
 		case 'z':
 			gzip = 1;
@@ -161,13 +161,13 @@ int main(int argc, char **argv)
 	}
 #endif
 
-	if (wipe && sparse) {
+	if (wipe_mode && sparse) {
 		fprintf(stderr, "Cannot specifiy both wipe and sparse\n");
 		usage(argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
-	if (wipe && gzip) {
+	if (wipe_mode && gzip) {
 		fprintf(stderr, "Cannot specifiy both wipe and gzip\n");
 		usage(argv[0]);
 		exit(EXIT_FAILURE);
@@ -201,7 +201,7 @@ int main(int argc, char **argv)
 	}
 
 	exitcode = make_ext4fs_internal(fd, directory, mountpoint, fs_config_func, gzip,
-			sparse, crc, wipe, sehnd, verbose);
+			sparse, crc, wipe_mode, sehnd, verbose);
 	close(fd);
 
 	return exitcode;
