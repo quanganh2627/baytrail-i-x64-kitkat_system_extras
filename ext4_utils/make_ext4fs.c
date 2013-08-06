@@ -378,7 +378,7 @@ int make_ext4fs_sparse_fd(int fd, long long len,
 }
 
 int make_ext4fs(const char *filename, long long len,
-                const char *mountpoint, struct selabel_handle *sehnd)
+                const char *mountpoint, struct selabel_handle *sehnd, int wipe_mode)
 {
 	int fd;
 	int status;
@@ -392,7 +392,7 @@ int make_ext4fs(const char *filename, long long len,
 		return EXIT_FAILURE;
 	}
 
-	status = make_ext4fs_internal(fd, NULL, mountpoint, NULL, 0, 0, 0, 1, sehnd, 0);
+	status = make_ext4fs_internal(fd, NULL, mountpoint, NULL, 0, 0, 0, wipe_mode, sehnd, 0);
 	close(fd);
 
 	return status;
@@ -457,7 +457,7 @@ static char *canonicalize_rel_slashes(const char *str)
 
 int make_ext4fs_internal(int fd, const char *_directory,
                          const char *_mountpoint, fs_config_func_t fs_config_func, int gzip,
-                         int sparse, int crc, int wipe,
+                         int sparse, int crc, int wipe_mode,
                          struct selabel_handle *sehnd, int verbose)
 {
 	u32 root_inode_num;
@@ -602,8 +602,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 			aux_info.sb->s_blocks_count_lo - aux_info.sb->s_free_blocks_count_lo,
 			aux_info.sb->s_blocks_count_lo);
 
-	if (wipe)
-		wipe_block_device(fd, info.len);
+	wipe_block_device(fd, info.len, wipe_mode);
 
 	write_ext4_image(fd, gzip, sparse, crc);
 
