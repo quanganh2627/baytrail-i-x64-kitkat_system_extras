@@ -45,15 +45,6 @@ extern "C" {
 #define off64_t off_t
 #endif
 
-#ifdef __BIONIC__
-extern void*  __mmap2(void *, size_t, int, int, int, off_t);
-static inline void *mmap64(void *addr, size_t length, int prot, int flags,
-        int fd, off64_t offset)
-{
-    return __mmap2(addr, length, prot, flags, fd, offset >> 12);
-}
-#endif
-
 extern int force;
 
 #define warn(fmt, args...) do { fprintf(stderr, "warning: %s: " fmt "\n", __func__, ## args); } while (0)
@@ -174,6 +165,7 @@ void ext4_create_resize_inode(void);
 void ext4_create_journal_inode(void);
 void ext4_update_free(void);
 void ext4_queue_sb(void);
+u64 get_block_device_size(int fd);
 u64 get_file_size(int fd);
 u64 parse_num(const char *arg);
 void ext4_parse_sb(struct ext4_super_block *sb);

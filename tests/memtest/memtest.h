@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2013 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef _WIPE_H_
-#define _WIPE_H_
+#ifndef __MEMTEST_H__
+#define __MEMTEST_H__
 
-#include "ext4_utils.h"
+typedef long long nsecs_t;
 
-#define WIPE_DISABLED   0
-#define WIPE_FALLBACK   1
-#define WIPE_UNSECURE   2
-#define WIPE_SECURE     4
+// Function prototypes.
+nsecs_t system_time();
 
-int wipe_block_device(int fd, s64 len, int wipe_mode);
-
-#endif
+#endif // __MEMTEST_H__
