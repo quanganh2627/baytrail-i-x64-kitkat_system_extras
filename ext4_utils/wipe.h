@@ -17,11 +17,6 @@
 #ifndef _WIPE_H_
 #define _WIPE_H_
 
-#define WIPE_DISABLED   0
-#define WIPE_FALLBACK   1
-#define WIPE_UNSECURE   2
-#define WIPE_SECURE     4
-
-int wipe_block_device(int fd, s64 len, int wipe_mode);
+int wipe_block_device(int fd, s64 len);
 
 #endif

@@ -21,17 +21,10 @@
 extern "C" {
 #endif
 
-#ifndef WIPE_DISABLED
-#define WIPE_DISABLED   0
-#define WIPE_FALLBACK   1
-#define WIPE_UNSECURE   2
-#define WIPE_SECURE     4
-#endif
-
 struct selabel_handle;
 
 int make_ext4fs(const char *filename, long long len,
-                const char *mountpoint, struct selabel_handle *sehnd, int wipe_mode);
+                const char *mountpoint, struct selabel_handle *sehnd);
 int make_ext4fs_sparse_fd(int fd, long long len,
                 const char *mountpoint, struct selabel_handle *sehnd);
 
