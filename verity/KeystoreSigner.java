@@ -62,7 +62,7 @@ class BootKey extends ASN1Object
                 k.getModulus(),
                 k.getPublicExponent());
         this.algorithmIdentifier = new AlgorithmIdentifier(
-                PKCSObjectIdentifiers.sha256WithRSAEncryption);
+                PKCSObjectIdentifiers.sha1WithRSAEncryption);
     }
 
     public ASN1Primitive toASN1Primitive() {

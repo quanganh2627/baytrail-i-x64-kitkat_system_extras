@@ -60,7 +60,7 @@ public class BootSignature extends ASN1Object
         this.target = new DERPrintableString(target);
         this.length = new ASN1Integer(length);
         this.algorithmIdentifier = new AlgorithmIdentifier(
-                PKCSObjectIdentifiers.sha256WithRSAEncryption);
+                PKCSObjectIdentifiers.sha1WithRSAEncryption);
     }
 
     public ASN1Object getAuthenticatedAttributes() {
